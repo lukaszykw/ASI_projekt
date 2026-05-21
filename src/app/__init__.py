@@ -1,0 +1,1 @@
+"""Space Earth Dashboard backend."""
