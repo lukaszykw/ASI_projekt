@@ -63,6 +63,24 @@ async def list_observations(
     return list(result.scalars().all())
 
 
+async def list_observations_for_day(
+    session: AsyncSession,
+    source: str,
+    target_date: date,
+) -> list[SpaceObservation]:
+    start_at = datetime.combine(target_date, time.min, tzinfo=UTC)
+    end_at = datetime.combine(target_date, time.max, tzinfo=UTC)
+    statement = (
+        select(SpaceObservation)
+        .where(SpaceObservation.source == source)
+        .where(SpaceObservation.observed_at >= start_at)
+        .where(SpaceObservation.observed_at <= end_at)
+        .order_by(SpaceObservation.created_at.desc())
+    )
+    result = await session.execute(statement)
+    return list(result.scalars().all())
+
+
 async def get_daily_summary(session: AsyncSession, target_date: date) -> dict[str, Any]:
     start_at = datetime.combine(target_date, time.min, tzinfo=UTC)
     end_at = datetime.combine(target_date, time.max, tzinfo=UTC)

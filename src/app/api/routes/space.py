@@ -16,6 +16,7 @@ from app.ingestion.open_notify_client import OpenNotifyClient
 from app.repositories.space_observations import (
     get_daily_summary,
     list_observations,
+    list_observations_for_day,
     save_observation,
     save_observations,
 )
@@ -85,6 +86,14 @@ async def ingest_near_earth_objects(
     settings: Settings = Depends(get_settings),
     session: AsyncSession = Depends(get_session),
 ) -> list[SpaceObservationRead]:
+    if end_date is None or end_date == start_date:
+        cached_observations = await list_observations_for_day(session, "nasa_neows", start_date)
+        if cached_observations:
+            return [
+                SpaceObservationRead.model_validate(observation)
+                for observation in cached_observations
+            ]
+
     async with NasaClient(settings.nasa_api_key) as client:
         payload = await client.get_neo_feed(start_date, end_date or start_date)
 

@@ -37,6 +37,9 @@ Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/ingest/iss-pos
 Invoke-RestMethod -Method Post "http://localhost:8000/api/v1/space/ingest/neo?start_date=2026-05-23"
 ```
 
+Endpoint `ingest/neo` korzysta z prostego cache w PostgreSQL: jesli asteroidy dla
+podanej daty sa juz zapisane, backend zwraca rekordy z bazy bez ponownego zapytania do NASA.
+
 Zapisane obserwacje sa dostepne pod:
 
 ```text
