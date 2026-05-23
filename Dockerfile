@@ -8,6 +8,7 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY src ./src
 COPY frontend ./frontend
+COPY tests ./tests
 RUN pip install --no-cache-dir ".[dev]"
 
 EXPOSE 8000
