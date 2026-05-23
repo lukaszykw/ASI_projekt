@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    env_file: .env.example
+    environment:
+      APP_ENV: test
+      DATABASE_URL: postgresql+asyncpg://space:space@db-test:5432/space_dashboard_test
+    command: pytest
+    depends_on:
+      - db-test
+
+  db-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: space
+      POSTGRES_PASSWORD: space
+      POSTGRES_DB: space_dashboard_test
