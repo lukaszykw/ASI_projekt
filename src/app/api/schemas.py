@@ -1,3 +1,4 @@
+from datetime import date as date_type
 from datetime import datetime
 from typing import Any
 
@@ -19,3 +20,12 @@ class SpaceObservationRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DailySummaryRead(BaseModel):
+    date: date_type
+    total_observations: int
+    apod_count: int
+    iss_position_count: int
+    neo_count: int
+    latest_observation: SpaceObservationRead | None = None

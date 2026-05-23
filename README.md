@@ -43,6 +43,41 @@ Zapisane obserwacje sa dostepne pod:
 http://localhost:8000/api/v1/space/observations
 ```
 
+Agregowane podsumowanie dnia:
+
+```text
+http://localhost:8000/api/v1/space/daily-summary?target_date=2026-05-23
+```
+
+## Sciezka demo
+
+1. Uruchom projekt:
+
+```powershell
+docker compose -f docker-compose.dev.yml up --build
+```
+
+2. Otworz dashboard:
+
+```text
+http://localhost:8000/
+```
+
+3. Kliknij `Init DB`, zeby utworzyc tabele w PostgreSQL.
+4. Kliknij `Zapisz APOD`, `Zapisz ISS` i `Zapisz asteroidy`.
+5. Sprawdz sekcje `Zapisane obserwacje` oraz `Podsumowanie dnia`.
+6. Otworz Swagger:
+
+```text
+http://localhost:8000/docs
+```
+
+7. Uruchom testy:
+
+```powershell
+python -m pytest
+```
+
 ## Bledy zewnetrznych API
 
 Gdy NASA albo Open Notify nie odpowiada, backend zwraca czytelny blad JSON, np.:

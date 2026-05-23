@@ -11,6 +11,10 @@ const issLongitude = document.querySelector("#iss-longitude");
 const issTimestamp = document.querySelector("#iss-timestamp");
 const neoSummary = document.querySelector("#neo-summary");
 const neoList = document.querySelector("#neo-list");
+const summaryTotal = document.querySelector("#summary-total");
+const summaryApod = document.querySelector("#summary-apod");
+const summaryIss = document.querySelector("#summary-iss");
+const summaryNeo = document.querySelector("#summary-neo");
 const observationsTable = document.querySelector("#observations-table");
 const detailsEmpty = document.querySelector("#details-empty");
 const detailsContent = document.querySelector("#details-content");
@@ -76,6 +80,13 @@ function renderNeo(payload) {
       return li;
     }),
   );
+}
+
+function renderDailySummary(summary) {
+  summaryTotal.textContent = summary.total_observations;
+  summaryApod.textContent = summary.apod_count;
+  summaryIss.textContent = summary.iss_position_count;
+  summaryNeo.textContent = summary.neo_count;
 }
 
 function formatDateTime(value) {
@@ -178,8 +189,12 @@ async function loadDashboard() {
   setStatus("Dane odswiezone.");
 
   try {
-    const observations = await fetchJson(`${api}/space/observations`);
+    const [observations, summary] = await Promise.all([
+      fetchJson(`${api}/space/observations`),
+      fetchJson(`${api}/space/daily-summary?target_date=${date}`),
+    ]);
     renderObservations(observations);
+    renderDailySummary(summary);
   } catch (error) {
     dbStatusEl.textContent = `Brak polaczenia z baza: ${error.message}`;
     observationsTable.replaceChildren();
@@ -208,6 +223,10 @@ document.querySelector("#save-apod-btn").addEventListener("click", () => {
 });
 document.querySelector("#save-iss-btn").addEventListener("click", () => {
   postAction(`${api}/space/ingest/iss-position`, "Pozycja ISS zapisana.");
+});
+document.querySelector("#save-neo-btn").addEventListener("click", () => {
+  const date = todayIsoDate();
+  postAction(`${api}/space/ingest/neo?start_date=${date}`, "Asteroidy zapisane.");
 });
 
 loadDashboard().catch((error) => {

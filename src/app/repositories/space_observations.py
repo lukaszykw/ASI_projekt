@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import UTC, date, datetime, time
 from typing import Any
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import SpaceObservation
@@ -61,3 +61,37 @@ async def list_observations(
 
     result = await session.execute(statement.limit(limit))
     return list(result.scalars().all())
+
+
+async def get_daily_summary(session: AsyncSession, target_date: date) -> dict[str, Any]:
+    start_at = datetime.combine(target_date, time.min, tzinfo=UTC)
+    end_at = datetime.combine(target_date, time.max, tzinfo=UTC)
+
+    counts_statement = (
+        select(SpaceObservation.source, func.count(SpaceObservation.id))
+        .where(SpaceObservation.observed_at >= start_at)
+        .where(SpaceObservation.observed_at <= end_at)
+        .group_by(SpaceObservation.source)
+    )
+    counts_result = await session.execute(counts_statement)
+    counts_by_source = {source: count for source, count in counts_result.all()}
+
+    latest_statement = (
+        select(SpaceObservation)
+        .where(SpaceObservation.observed_at >= start_at)
+        .where(SpaceObservation.observed_at <= end_at)
+        .order_by(SpaceObservation.created_at.desc())
+        .limit(1)
+    )
+    latest_result = await session.execute(latest_statement)
+    latest_observation = latest_result.scalars().first()
+
+    total = sum(counts_by_source.values())
+    return {
+        "date": target_date,
+        "total_observations": total,
+        "apod_count": counts_by_source.get("nasa_apod", 0),
+        "iss_position_count": counts_by_source.get("open_notify_iss", 0),
+        "neo_count": counts_by_source.get("nasa_neows", 0),
+        "latest_observation": latest_observation,
+    }

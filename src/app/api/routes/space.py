@@ -3,7 +3,7 @@ from datetime import date
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.schemas import SpaceObservationRead
+from app.api.schemas import DailySummaryRead, SpaceObservationRead
 from app.core.config import Settings, get_settings
 from app.db.session import create_tables, get_session
 from app.ingestion.nasa_client import NasaClient
@@ -14,6 +14,7 @@ from app.ingestion.normalizers import (
 )
 from app.ingestion.open_notify_client import OpenNotifyClient
 from app.repositories.space_observations import (
+    get_daily_summary,
     list_observations,
     save_observation,
     save_observations,
@@ -99,3 +100,24 @@ async def get_observations(
 ) -> list[SpaceObservationRead]:
     observations = await list_observations(session, source=source, limit=limit)
     return [SpaceObservationRead.model_validate(observation) for observation in observations]
+
+
+@router.get("/daily-summary", response_model=DailySummaryRead)
+async def get_daily_space_summary(
+    target_date: date | None = None,
+    session: AsyncSession = Depends(get_session),
+) -> DailySummaryRead:
+    summary = await get_daily_summary(session, target_date or date.today())
+    latest_observation = summary["latest_observation"]
+    return DailySummaryRead(
+        date=summary["date"],
+        total_observations=summary["total_observations"],
+        apod_count=summary["apod_count"],
+        iss_position_count=summary["iss_position_count"],
+        neo_count=summary["neo_count"],
+        latest_observation=(
+            SpaceObservationRead.model_validate(latest_observation)
+            if latest_observation is not None
+            else None
+        ),
+    )
