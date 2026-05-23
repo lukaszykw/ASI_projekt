@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
 from app.core.config import settings
@@ -15,6 +17,12 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
     )
     app.include_router(api_router, prefix=settings.api_prefix)
+    app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+    @app.get("/", include_in_schema=False)
+    async def dashboard() -> FileResponse:
+        return FileResponse("frontend/index.html")
+
     return app
 
 

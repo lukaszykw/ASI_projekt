@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Space Earth Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Space Earth Dashboard</h1>
+        <p id="status">Ladowanie danych...</p>
+      </div>
+      <nav class="actions" aria-label="Akcje">
+        <button id="refresh-btn" type="button">Odswiez</button>
+        <button id="init-db-btn" type="button">Init DB</button>
+        <button id="save-apod-btn" type="button">Zapisz APOD</button>
+        <button id="save-iss-btn" type="button">Zapisz ISS</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel apod-panel">
+        <h2>NASA APOD</h2>
+        <div class="media-frame">
+          <img id="apod-image" alt="Astronomy Picture of the Day">
+        </div>
+        <h3 id="apod-title">-</h3>
+        <p id="apod-date">-</p>
+        <p id="apod-description">-</p>
+      </section>
+
+      <section class="panel">
+        <h2>Pozycja ISS</h2>
+        <dl class="metrics">
+          <div>
+            <dt>Szerokosc</dt>
+            <dd id="iss-latitude">-</dd>
+          </div>
+          <div>
+            <dt>Dlugosc</dt>
+            <dd id="iss-longitude">-</dd>
+          </div>
+          <div>
+            <dt>Timestamp</dt>
+            <dd id="iss-timestamp">-</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Asteroidy dzisiaj</h2>
+        <p id="neo-summary">-</p>
+        <ul id="neo-list" class="list"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Zapisane obserwacje</h2>
+        <p id="db-status">Baza wymaga uruchomionego PostgreSQL.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Zrodlo</th>
+                <th>Nazwa / ID</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="observations-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel details-panel">
+        <h2>Szczegoly rekordu</h2>
+        <p id="details-empty">Wybierz rekord z tabeli.</p>
+        <article id="details-content" hidden>
+          <h3 id="details-title">-</h3>
+          <dl class="details-list">
+            <div>
+              <dt>Zrodlo</dt>
+              <dd id="details-source">-</dd>
+            </div>
+            <div>
+              <dt>ID zewnetrzne</dt>
+              <dd id="details-external-id">-</dd>
+            </div>
+            <div>
+              <dt>Data obserwacji</dt>
+              <dd id="details-observed-at">-</dd>
+            </div>
+            <div>
+              <dt>Szczegoly</dt>
+              <dd id="details-summary">-</dd>
+            </div>
+          </dl>
+          <a id="details-link" href="#" target="_blank" rel="noreferrer" hidden>Otworz link</a>
+          <pre id="details-raw"></pre>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
