@@ -21,6 +21,28 @@ API: <http://localhost:8000/api/v1/health>
 
 Swagger: <http://localhost:8000/docs>
 
+## Zapis danych do PostgreSQL
+
+Po uruchomieniu Dockera zainicjalizuj tabele:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/database/init
+```
+
+Nastepnie mozna zapisac dane pobrane z API:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/ingest/apod
+Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/ingest/iss-position
+Invoke-RestMethod -Method Post "http://localhost:8000/api/v1/space/ingest/neo?start_date=2026-05-23"
+```
+
+Zapisane obserwacje sa dostepne pod:
+
+```text
+http://localhost:8000/api/v1/space/observations
+```
+
 ## Testy
 
 ```powershell
