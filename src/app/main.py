@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
 from app.core.config import settings
+from app.core.exceptions import ExternalApiError
+from app.core.handlers import external_api_error_handler
 from app.core.logging import configure_logging
 
 
@@ -16,6 +18,7 @@ def create_app() -> FastAPI:
         docs_url="/docs",
         redoc_url="/redoc",
     )
+    app.add_exception_handler(ExternalApiError, external_api_error_handler)
     app.include_router(api_router, prefix=settings.api_prefix)
     app.mount("/static", StaticFiles(directory="frontend"), name="static")
 

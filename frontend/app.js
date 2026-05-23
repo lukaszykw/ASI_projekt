@@ -29,7 +29,14 @@ function todayIsoDate() {
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
   if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`);
+    let detail = response.statusText;
+    try {
+      const payload = await response.json();
+      detail = payload.detail || detail;
+    } catch {
+      detail = response.statusText;
+    }
+    throw new Error(`${response.status} ${detail}`);
   }
   return response.json();
 }

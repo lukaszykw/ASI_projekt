@@ -43,6 +43,20 @@ Zapisane obserwacje sa dostepne pod:
 http://localhost:8000/api/v1/space/observations
 ```
 
+## Bledy zewnetrznych API
+
+Gdy NASA albo Open Notify nie odpowiada, backend zwraca czytelny blad JSON, np.:
+
+```json
+{
+  "detail": "NASA API request failed with status 429.",
+  "source": "nasa",
+  "upstream_status_code": 429
+}
+```
+
+Bledy sa rowniez zapisywane w logach aplikacji.
+
 ## Testy
 
 ```powershell
