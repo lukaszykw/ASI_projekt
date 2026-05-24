@@ -61,8 +61,13 @@ async def ingest_apod(
     settings: Settings = Depends(get_settings),
     session: AsyncSession = Depends(get_session),
 ) -> SpaceObservationRead:
+    effective_date = target_date or date.today()
+    cached_observations = await list_observations_for_day(session, "nasa_apod", effective_date)
+    if cached_observations:
+        return SpaceObservationRead.model_validate(cached_observations[0])
+
     async with NasaClient(settings.nasa_api_key) as client:
-        payload = await client.get_apod(target_date)
+        payload = await client.get_apod(effective_date)
 
     observation = await save_observation(session, normalize_apod(payload))
     return SpaceObservationRead.model_validate(observation)

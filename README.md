@@ -2,6 +2,16 @@
 
 Backend i dashboard do prezentowania danych z NASA APOD, NASA NeoWs oraz pozycji ISS.
 
+## Konfiguracja
+
+Skopiuj `.env.example` do `.env` i ustaw klucz NASA:
+
+```env
+NASA_API_KEY=twoj_klucz_nasa
+```
+
+W trybie Docker Compose dev aplikacja uzywa `.env`.
+
 ## Stack
 
 - Python 3.11+
@@ -36,6 +46,9 @@ Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/ingest/apod
 Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/ingest/iss-position
 Invoke-RestMethod -Method Post "http://localhost:8000/api/v1/space/ingest/neo?start_date=2026-05-23"
 ```
+
+Endpoint `ingest/apod` korzysta z prostego cache w PostgreSQL: jesli APOD dla
+podanej daty jest juz zapisany, backend zwraca rekord z bazy bez ponownego zapytania do NASA.
 
 Endpoint `ingest/neo` korzysta z prostego cache w PostgreSQL: jesli asteroidy dla
 podanej daty sa juz zapisane, backend zwraca rekordy z bazy bez ponownego zapytania do NASA.
@@ -99,10 +112,37 @@ Bledy sa rowniez zapisywane w logach aplikacji.
 
 ```powershell
 pip install -e ".[dev]"
-pytest
+python -m pytest
+```
+
+Testy w Dockerze:
+
+```powershell
+docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from api
+docker compose -f docker-compose.test.yml down
 ```
 
 ## Test wydajnosciowy
+
+Uruchom najpierw aplikacje w trybie dev:
+
+```powershell
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Przed pomiarem zainicjalizuj baze przyciskiem `Init DB` w dashboardzie albo komenda:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8000/api/v1/space/database/init
+```
+
+W drugim terminalu uruchom Locust w trybie headless:
+
+```powershell
+locust -f tests/performance/locustfile.py --host http://localhost:8000 --headless -u 10 -r 2 -t 30s
+```
+
+Tryb z interfejsem WWW Locust:
 
 ```powershell
 locust -f tests/performance/locustfile.py --host http://localhost:8000

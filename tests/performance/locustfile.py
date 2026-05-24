@@ -9,5 +9,17 @@ class ApiUser(HttpUser):
         self.client.get("/api/v1/health")
 
     @task
+    def dashboard(self) -> None:
+        self.client.get("/")
+
+    @task
+    def observations(self) -> None:
+        self.client.get("/api/v1/space/observations?limit=20")
+
+    @task
+    def daily_summary(self) -> None:
+        self.client.get("/api/v1/space/daily-summary")
+
+    @task
     def iss_position(self) -> None:
         self.client.get("/api/v1/space/iss-position")
