@@ -3,6 +3,9 @@ const api = "/api/v1";
 const statusEl = document.querySelector("#status");
 const dbStatusEl = document.querySelector("#db-status");
 const apodImage = document.querySelector("#apod-image");
+const apodVideo = document.querySelector("#apod-video");
+const apodFallback = document.querySelector("#apod-fallback");
+const apodMediaLink = document.querySelector("#apod-media-link");
 const apodTitle = document.querySelector("#apod-title");
 const apodDate = document.querySelector("#apod-date");
 const apodDescription = document.querySelector("#apod-description");
@@ -53,12 +56,28 @@ function renderApod(apod) {
   apodTitle.textContent = apod.title || "-";
   apodDate.textContent = apod.date || "-";
   apodDescription.textContent = apod.explanation || "-";
+  apodImage.hidden = true;
+  apodVideo.hidden = true;
+  apodFallback.hidden = true;
+  apodImage.removeAttribute("src");
+  apodVideo.removeAttribute("src");
+  apodMediaLink.removeAttribute("href");
 
   if (apod.media_type === "image" && apod.url) {
     apodImage.hidden = false;
     apodImage.src = apod.url;
-  } else {
-    apodImage.hidden = true;
+    return;
+  }
+
+  if (apod.media_type === "video" && apod.url) {
+    apodFallback.hidden = false;
+    apodMediaLink.href = apod.url;
+    return;
+  }
+
+  if (apod.url) {
+    apodFallback.hidden = false;
+    apodMediaLink.href = apod.url;
   }
 }
 

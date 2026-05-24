@@ -101,6 +101,23 @@ button:hover {
   object-fit: contain;
 }
 
+.media-frame iframe {
+  display: block;
+  width: 100%;
+  min-height: 25rem;
+  border: 0;
+}
+
+.media-frame a {
+  color: #ffffff;
+}
+
+.media-fallback {
+  padding: 1rem;
+  text-align: center;
+  color: #ffffff;
+}
+
 .metrics {
   display: grid;
   gap: 0.625rem;
